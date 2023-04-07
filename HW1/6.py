@@ -83,7 +83,7 @@ def p(  # This is the p in Policy Itertaion at 80 page. p(s', r | s, pi(s))
                                         credit * sell_car_2 
                                     )
                                     cost = (
-                                        cost_car_move * abs(action) +
+                                        cost_car_move * abs(action if action <= 0 else (action - 1)) +
                                         cost_parking if changed_state_1 >= 10 else 0 +
                                         cost_parking if changed_state_2 >= 10 else 0
                                     )
@@ -195,20 +195,31 @@ if __name__ == "__main__":
                 size=1
             )
             policy[state] = 0
-    
+
     value_func = policy_evaluation(
         value_func=value_func,
         policy=policy,
         threshold=5e-3,
         p=p
     )
+    # %%
     policy = policy_improvement(
         value_func=value_func,
         policy=policy,
         p=p
     )
-        
+    # %%    
+    import os
+    os.system("pip install seaborn")
+    import seaborn as sns
     result = (value_func, policy)
+
+    policy_heatmap = numpy.zeros((21, 21))
+
+    for state, action in policy.items():
+        policy_heatmap[state] = action
+    sns.heatmap(policy_heatmap)    
+        
         
 
 print("Exit")
